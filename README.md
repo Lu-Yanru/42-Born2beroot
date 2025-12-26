@@ -4,7 +4,7 @@
 This project creates a virtual machine (VM), sets up an operating system (OS) and implements certain rules in it.
 
 # Instructions
-
+Retrieve the signature text of the VM
 
 # Project description
 ## Virtual Machine
@@ -54,6 +54,10 @@ Source:
 - https://siit.co/blog/mac-virtual-machines-virtualbox-vs-utm/32587
 
 ## Choice of operating system (Debian vs. Rocky Linux)
+An **operating system (OS)** is a layer of software that manages computer hardware and software resources and provides common services for computer programs. It allows the user application programs to interact with the system hardware.
+The basic components of an OS architecture are:
+- **Kernel**: The central component of an OS architecture. It acts as a bridge between software applications and hardware. It manages system resources, such as the CPU, memory and devices, and handles tasks like running programs, accessing files and connecting to external devices like printers and keyboards.
+- **Shell**: The outermost layer of the OS and handles user interaction. It interprets input for the OS and handles the output from the OS.
 
 |                    |  Debian  |  Rocky Linux  |
 |--------------------|----------|---------------|
@@ -69,6 +73,8 @@ Source:
 |Usage               | Better for general purposes | More tailored to server use |
 
 Source:
+- [Tutorial on Operating System - Architecture](https://www.tutorialspoint.com/operating_system/os_architecture.htm)
+- [GeeksforGeeks Introduction to Operating system](https://www.geeksforgeeks.org/operating-systems/introduction-of-operating-system-set-1/)
 - [Reasons to use Debian](https://www.debian.org/intro/why_debian)
 - [Rocky Linux guides](https://docs.rockylinux.org/10/guides/)
 - https://amadla.medium.com/debian-linux-vs-rocky-os-exploring-the-best-choice-for-your-server-dfd6b3d80c1a
@@ -80,6 +86,11 @@ The **Linux Security Module (LSM)** is a software framework that provides a mech
 **Mandatory access control (MAC)** is a type of access control security policy. It is a system-enforced method of restricting access to objects based on the sensitivity of the object and the clearance of the user. Basically there is a set of rules which decides who gets access to what. This prevents unauthorized information sharing, because the policy cannot be overwritten by users. This is in contrast with discretionary access control (DAC), which was traditionally used by Linux and UNIX systems, where access control is enforced by individual file owners rather than by the system, therefore users have the ability to change permissions on their own files.
 
 **AppArmor** is the default MAC LSM used in Debian. It uses path-based rules, i.e. it assigns rules to file paths. This makes it easier to configure and is ideal for cases where usability and ease of management is a priority.
+
+Check AppArmor status:
+
+    sudo aa-status
+
 
 **Security-Enhanced Linux (SELinux)** is also a MAC LSM, used in Rocky Linux. It uses a label-based model, which assigns rules to security contexts and object labels. This offers more granular control, making it preferred in enterprise and high-security environments.
 
@@ -164,6 +175,10 @@ A **file system** determines how data is stored and retrieved. Debian recommends
 
 This project uses the recommended partition scheme by Debian.
 
+Check partitions:
+
+    lsblk
+
 Source:
 - [An Introduction to Disk Partitions](https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/5/html/installation_guide/ch-partitions-x86#tb-partitions-types-x86)
 - [Logical Volumn Manager (LVM) versus standard partitioning in Linux](https://www.redhat.com/en/blog/lvm-vs-partitioning)
@@ -176,21 +191,320 @@ Source:
 
 ### Security policy
 #### SSH
+The **SSH (Secure Shell) Protocol** is a method for secure remote login from one computer to another with authentication and encryption.
+
+It is typically used for providing secure access for users and automated processes, interactive and automated file transfers, issuing remote commands, and managing network infrastructure.
+
+SSH works in the client-server model: The SSH client initiates the connection by contacting the server. The SSH servers sends back server public key to verify the identity of the server. Then the client and the server negotiate parameters and open encrypted channel and the user can login to the server host operating system.
+
+The most common **authentication** methods are:
+- Passwords
+- Public key authentication (asymmetric encryption): There is a cryptographic key pair, public key and private key, and configure the public key on a server to authorize access and grant anyone who has a copy of the private key access to the server. This methods is primarily used for secure automation.
+
+After the connection between the SSH client and server has been established, the transmitted data is **encrypted** using the following methods:
+- Symmetric encryption: The client and server agree on a secret key to encrypt and decrypt messages.
+- Hashing: Hash functions are made in a way that they don't need to be decrypted. Using the same hashing function and message should produce the same hash. SSH checks whether the hashes are the same to see if any portion of the data has been modified. Therefore, hashes are mainly used for data integrity purposes and to verify the authenticity of communication.
+
+Install OpenSSH server, an open-source implementation of the SSH protocol:
+
+    sudo apt install openssh-server
+
+Check SSH status:
+
+    sudo systemctl status ssh
+
+or
+
+    sudo service ssh status
+
+As per instructed in the subject, the SSH service should run on port 4242. To do this, edit the SSH configuration file located at `/etc/ssh/sshd_config` and change `Port 22`(the default port) to `Port 4242`.
+
+For security reasons, it must not be possible to connect using SSH as root. This prevents attackers from accessing the root remotely. To do this, set `PermitRootLogin` to `no`.
+
+Restart SSH to apply the changes:
+
+    sudo systemctl restart ssh
+
+or
+
+    sudo service ssh restart
+
+Set up port forwarding in VirutalBox which redirect an available host port to the guest port (4242) and allows for SSH access to the virtual machine from the host system. Connect the <user> to the `localhost` machine on <hostport> via SSH:
+
+    ssh <user>@localhost -p <hostport>
+
+Quit the connection:
+
+    exit
+
+or
+
+    logout
+
+Source:
+- [SSH Protocol - Secure Remote Login and File Transfer](https://www.ssh.com/academy/ssh/protocol)
+- [Tutorial: Understanding the SSH Encryption and Connection Process](https://www.digitalocean.com/community/tutorials/understanding-the-ssh-encryption-and-connection-process)
 
 #### Firewall
-As instructed in the subject, this project uses the UFW firewall and leaves only port 4242 open.
+As per instructed in the subject, this project uses the UFW firewall and leaves only port 4242 open.
+
+Install UFW:
+
+    sudo apt install ufw
+
+Enable firewall:
+
+    sudo ufw enable
+
+The default setting is to deny all incoming requests and allow all outgoing requests. Allow connection via port 4242:
+
+    sudo ufw allow 4242
+
+Check UFW status:
+
+    sudo ufw status numbered
+
+or for more details
+
+    sudo ufw status verbose
+
+Delete a rule:
+
+    sudo ufw delete <rule_number>
+
+or
+
+    sudo ufw deny <port_number>
 
 #### Password policy
+Passwords protect user accounts and sensitive data from unauthorized access. It is therefore important to implement a strong password policy to prevent brute force attacks and security breaches related to weak passwords.
+
+As per instructed in the subject, this project sets up a strong password policy as follows:
+
+Edit the login definition file:
+
+    sudo vim /etc/login.defs
+
+The password expires every 30 days.
+
+    PASS_MAX_DAYS 30
+
+The minimum number of days between password changes is 2.
+
+    PASS_MIN_DAYS 2
+
+The user receives a warning message 7 days before their password expires.
+
+    PASS_WARN_AGE 7
+
+Ensure the policy changes applied to the current users:
+
+    sudo chage -M 30 <username> # set PASS_MAX_DAYS to 30
+    sudo chage -m 2 <username> #set PASS_MIN_DAYS to 2
+
+Check password policy for a user:
+
+    sudo chage -l <username>
+
+Install the `libpam-pwquality` package to enforce password quality rules:
+
+    sudo apt install libpam-pwquality
+
+Edit the PAM (Pluggable Authentication Modules) configuration file:
+
+    sudo vim /etc/pam.d/common-password
+
+Add the following specifications after the line `password requisite pam_pwquality.so retry=3` (retry specifies the max number of incorrect attempts):
+
+The password must be at least 10 characters long. Every additional character dramatically increased the number of guesses an attacker would need to try.
+
+    minlen=10
+
+It must contain minimum one uppercase letter:
+
+    ucredit=-1 # + for maximum
+
+It must contain minimum one lowercase letter:
+
+    lcredit=-1
+
+It must contain minimum one digit:
+
+    dcredit=-1
+
+It must not contain more than 3 consecutive identical characters:
+
+    maxrepeat=3
+
+The password must not include the name of the user:
+
+    reject_username
+
+The password must have at least 7 characters that are not part of the former password. This rule does not apply to the root password, because when you change the root password, it does not check for the old password.
+
+    difok=7
+
+Implement this password policy for root:
+
+    enforce_for_root
+
+Change the password for a user:
+
+    sudo passwd <username>
+
+Source:
+- [National Institute of Standards and Technology (NIST) guidelines](https://pages.nist.gov/800-63-4/sp800-63b.html#appA)
 
 ### User management
+#### sudo
+This project uses `sudo` to allow other users to execute root commands.
 
-`sudo` gives another user administrative access to the system.
+**sudo (superuser do)** is a program designed to let system admins allow some users (users in the sudo group) to execute some commands as root (or any other user). This is safer than letting other users to use root directly, because `sudo` gives system admins more control over the access to root. Normal users don't need the root password. Extra privileges can be granted to individual users only temporarily, and usually, a normal user only needs to run certain root commands occasionally. This reduces the possibility of mistakes. Finally, when a `sudo` command is executed, the original username and the command are logged.
+
+Installing `sudo`:
+
+    su - #switch to root user
+    apt install sudo
+
+Reboot the machine to apply changes:
+
+    sudo reboot
+
+Display `sudo` version and configuration details to check if installation was successful:
+
+    sudo -V
+
+The subject requires the following configuration for `sudo`:
+
+Set up a local `sudo` configuration file in the `/etc/sudoers.d/` folder:
+
+    vim /etc/sudoers.d/sudo_config
+
+Limit authentication to 3 attempts when the password is incorrect:
+
+    Defaults  passwd_tries=3
+
+A custom message to be displayed if an error occurs due to a wrong password:
+
+    Defaults  badpass_message="Wrong password!"
+
+Archive inputs and outputs using `sudo` in the `/var/log/sudo/` folder:
+
+    mkdir /var/log/sudo # creates the folder
+
+    Defaults  logfile="/var/log/sudo/sudo.log" # the log file
+    Defaults  log_input, log_output # log both inputs and outputs
+    Defaults  iolog_dir="/var/log/sudo" # the directory for the log file
+
+The TTY (teletype) command displays information about the terminal currently connected to the standard input. When TTY mode is set, `sudo` must be run from a logged-in terminal session (a tty). This prevents `sudo` from being used from daemons (A program that runs as a background process, rather than being under the direct control of an interactive user.) or other detached processes like cron jobs or web server plugins. It also means that you can't run it directly from an SSH call without setting up a terminal session. Enable TTY mode:
+
+    Defaults  requiretty
+
+Restrict the paths that can be used by `sudo`:
+
+    Defaults  secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin"
+
+`sudo` is in contrast with **su (switch user)** where you switch to a particular user (including root) directly.
+
+To switch to a user while keeping the current environment:
+
+    su <user>
+
+To switch to a user including the user's environment variables:
+
+    su - <user>
+
+Keep <user> blank to switch to root.
+
+Source:
+- [Debian wiki sudo](https://wiki.debian.org/sudo)
+- [Exploring the differences between sudo and su commands in Linux](https://www.redhat.com/en/blog/difference-between-sudo-su)
+- https://stackoverflow.com/questions/67985925/why-would-i-want-to-require-a-tty-for-sudo-whats-the-security-benefit-of-requi
+
+#### Groups
+Create a new user:
+
+    sudo adduser <username>
+
+Verify whether the user was successfully created:
+
+    getent passwd <username>
+
+Verify user's password policy:
+
+    sudo chage -l <username>
+
+It's more efficient to group user accounts with similar access requirements than to manage permissions on a user-by-user basis. Only the users in the sudo group have `sudo` access.
+
+Add a group:
+
+    sudo addgroup user42
+
+Add a user to groups:
+
+    sudo usermod -a -G user42,sudo <user>
+
+or
+
+    sudo adduser <username> <groupname>
+
+Check group and the users in them:
+
+    getent group <groupname>
+
+Source:
+- [How to manage users and groups in Linux](https://www.redhat.com/en/blog/linux-user-group-management)
 
 ### System monitoring
+The subject requires the creation of a monitoring script in `bash` that displays the following information:
 
-`cron`
+Use `bash` as the command interpreter:
+
+    #!/bin/bash
+
+The architecture of the operating system and its kernel version:
+
+    uname -a # -a = -all
+
+The number of physical processors: In the file `/proc/cpuinfo`, count how many "physical id" there are.
+
+    grep "physical id" /proc/cpuinfo | wc -l # The first part finds the lines containing the phrase "physical id" in the file /proc/cpuinfo. THe second part counts how many lines there are.
+
+The number of virtual processors:
+
+The current available RAM on the server and its utilization rate as a percentage:
+
+The current available storage on the server and its utilization rate as a percentage:
+
+The current utilization rate of the processors as a percentage:
+
+The date and time of the last reboot:
+
+Whether LVM is active or not:
+
+The number of active connections:
+
+The number of users using the server:
+
+The IPv4 address of the server and its MAC (Media Access Control) address:
+
+The number of commands executed with the `sudo` program:
+
+**wall**
+
+**cron**
 
 ### Services installed
+#### WordPress
+To run WordPress, a web server, a database management system, and PHP are required.
+##### lighttpd
+
+##### MariaDB
+
+##### PHP
+
+#### Fail2ban
+for preventing brute force SSH
 
 # Resources
 - [Official website of Debian](https://www.debian.org/)
