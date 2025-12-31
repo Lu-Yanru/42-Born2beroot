@@ -452,6 +452,10 @@ Check group and the users in them:
 
     getent group <groupname>
 
+Delete a user: `-f(orce)` deletes the account (including mail and home directory) even if the user is still logged in. `-r(emove)` deletes the account (including mail and home directory), but the user must be logged out.
+
+    sudo userdel <username>
+
 Source:
 - [How to manage users and groups in Linux](https://www.redhat.com/en/blog/linux-user-group-management)
 
@@ -472,27 +476,70 @@ The number of physical processors: In the file `/proc/cpuinfo`, count how many "
 
 The number of virtual processors:
 
-The current available RAM on the server and its utilization rate as a percentage:
+    grep "^processor" /proc/cpuinfo | wc -l # "^processor" matches expressions starting with "processor".
 
-The current available storage on the server and its utilization rate as a percentage:
+The current available RAM on the server and its utilization rate as a percentage: The `free` command display the amount of free and used memory in the system. The `--mega` option displays the unit in megabytes. `awk` is a text-processind and pattern-scanning tool. `$1 == "Mem:"` finds in the first column the rows that match "Mem:". `print $3` prints out the 3rd column.
 
-The current utilization rate of the processors as a percentage:
+    free --mega | awk '$1 == "Mem:" {print $3}' # used memory
+    free --mega | awk '$1 == "Mem:" {print $2}' # total memory
+    free --mega | awk '$1 == "Mem:" {printf("%.2f"), $3/$2*100}' # percentage of used memory
 
-The date and time of the last reboot:
+The current available storage on the server and its utilization rate as a percentage: The `df` (disk free) command displays the file system disk usage on the mounted file system. The `-B<SIZE>` option displays the size in <SIZE> (e.g. GB for gigabytes, MB for megabytes). `grep "^/dev/"` finds the lines starting with "/dev/". These are the mounted storage devices/disks. `grep -v "/boot$"` excludes lines ending with "/boot", which is the partition containing the boot loader files. `awk '{used += $3} END {print used}'` get the sum of all the numbers in column 3 and prints it.
 
-Whether LVM is active or not:
+    df -BMB | grep "^/dev/" | grep -v "/boot$" | awk '{used += $3} END {print used}' # used disk
+    df -BGB | grep "^/dev/" | grep -v "/boot$" | awk '{total += $2} END {print total}' # total disk
+    df -BMB | grep "^/dev/" | grep -v "/boot$" | awk '{used += $3} {total += $2} END {printf("%d"), used/total*100}' # percentage of used disk
 
-The number of active connections:
+The current utilization rate of the processors as a percentage: The `top` command provides a dynamic real-time view of a running system. The `-b` option is to start `top` in batch mode to send output from `top` to other programs or files. In this mode, `top` will not accept input and runs until the iterations limit set with the `-n` open or until killed. The CPU usage information is in the line starting with "%Cpu". The `cut` command cuts out the CPU usage line starting from the 9th character. This leaves only the usage data itself without the title "%Cpu(s):". `xarg` turns the line into arguments delimited by space, which can be further processed by `awk`. `awk` sums the percentage of CPU time running user processes (us) and that of processes with a nice value (ni).
 
-The number of users using the server:
+    top -bn1 | grep "^%Cpu" | cut -c 9- | xargs | awk {printf("%.1f"), $1 + $3}
 
-The IPv4 address of the server and its MAC (Media Access Control) address:
+The date and time of the last reboot: The `who` command prints information about users who are currently logged in. The `-b` option prints the time of last system boot.
 
-The number of commands executed with the `sudo` program:
+    who -b | awk '$1 == "system" {print $3 " " $4}'
 
-**wall**
+Whether LVM is active or not: The `lsblk` lists information about all available or the specified block devices (e.g. hard drives, SSDs and other storage related devices). Count how many lines contain "lvm" (as type). If there aren't any, print "no", otherwise print "yes".
+
+    if [ $(lsblk | grep "lvm" | wc -l) -eq 0 ]; then echo no; else echo yes; fi
+
+The number of active connections: **Transmission Control Protocal (TCP)** is a connection-oriented protocol for communications that helps in the exchange of messages between different devices over a network. Major internet applications such as the WWW, email, remote administration, file transfer and streaming media rely on TCP. The `ss` command displays information on sockets. The `-t` options displays TCP sockets. `state` filters in only established connections.
+
+    ss -t state established | wc -l
+
+The number of users using the server: The `users` command prints the user names of users currently logged in to the current host. `wc -w` counts how many words are printed.
+
+    users | wc -w
+
+The IPv4 address of the server and its MAC (Media Access Control) address: An **IP address** is a unique numerical label assigned to each device connected to a computer network that uses the Internet Protocol (IP) for communication. `hostname -I` gets all IP (network) addresses. This option does not depend on resolvability of hostname (translation from hostname to IP address). **MAC (Media Access Control)** is the layer that controls the hardware responsible for interaction with the wired ir wireless transmission medium. It uses unique **MAC addresses** assigned to each device's network interface controller (NIC) for accurate data delivery within a local network. `ip link show` shows information on network devices.
+
+    hostname -I # ip address
+    ip link show | grep "ether" | awk '{print $2}' # MAC address
+
+The number of commands executed with the `sudo` program: The `journalctl` command prints log entris from the system journal. `_COMM=sudo` filters the entries with only the file path "sudo" which is an executable script (thus `_COMM`).
+
+    journalctl _COMM=sudo | grep COMMAND | wc -l
+
+The **wall** command displays a message, or the content of a file or its standard input on the terminals of all currently logged in users. Syntax:
+
+    wall [-n] [-t timeout] [-g group] [message | file]
 
 **cron**
+
+Source:
+- [free Linux manual page](https://man7.org/linux/man-pages/man1/free.1.html)
+- [awk tutorial](https://www.cyberciti.biz/faq/bash-scripting-using-awk/)
+- [df Linux manual page](https://man7.org/linux/man-pages/man1/df.1.html)
+- [GeeksforGeeks df tutorial](https://www.geeksforgeeks.org/linux-unix/df-command-linux-examples/)
+- [top Linux manual page](https://man7.org/linux/man-pages/man1/top.1.html)
+- [GeeksforGeeks Transmission Control Protocol - TCP](https://www.geeksforgeeks.org/computer-networks/what-is-transmission-control-protocol-tcp/)
+- [ss Linux manual page](https://man7.org/linux/man-pages/man8/ss.8.html)
+- [GeeksforGeeks What is an IP Address](https://www.geeksforgeeks.org/computer-science-fundamentals/what-is-an-ip-address/)
+- [GeeksforGeeks hostname command in Linux with examples](https://www.geeksforgeeks.org/linux-unix/hostname-command-in-linux-with-examples/)
+- [GeeksforGeeks MAC - Media Access Control](https://www.geeksforgeeks.org/computer-networks/mac-full-form/)
+- [ip Linux manual page](https://man7.org/linux/man-pages/man8/ip.8.html)
+- [journalctl Linux manual page](https://man7.org/linux/man-pages/man1/journalctl.1.html)
+- [wall Linux manual page](https://man7.org/linux/man-pages/man1/wall.1.html)
+- [Regular Expressions](https://www.ibm.com/docs/en/controller/11.1.2?topic=codes-regular-expressions)
 
 ### Services installed
 #### WordPress
