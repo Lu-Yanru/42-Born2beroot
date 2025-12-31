@@ -7,5 +7,5 @@ https://m4nnb3ll.medium.com/my-experience-with-the-born2beroot-project-42-ad19d7
 https://baigal.medium.com/born2beroot-e6e26dfb50ac
 https://github.com/ayoub0x1/born2beroot
 
-Mardown editor and converter
+Markdown editor and converter
 https://md2file.com/
