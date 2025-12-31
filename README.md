@@ -587,8 +587,8 @@ Install lighttpd packages:
 Check version, start, enable lighttpd and check status:
 
     sudo lighttpd -v
-    sudo systemctl start lighttpd
     sudo systemctl enable lighttpd
+    sudo systemctl start lighttpd
     sudo systemctl status lighttpd
 
 Open port 80 to connect to lighttpd services (http):
@@ -614,8 +614,8 @@ Secure the installation: This script guides you through important security setti
 
 Start, enable and check MariaDB status:
 
-    sudo systemctl start mariadb
     sudo systemctl enable mariadb
+    sudo systemctl start mariadb
     sudo systemctl status mariadb
 
 Log into the MariaDB client entering the root (of the database) password:
@@ -715,8 +715,22 @@ Edit the configuration file with database info set before. And finish setting up
 Source:
 - [How to install WordPress](https://developer.wordpress.org/advanced-administration/before-install/howto-install/)
 
-#### Fail2ban
-for preventing brute force SSH
+#### Netdata
+**Netdata** is an open-source tool designed to visualize system monitoring data such as CPU usage, disk activity, bandwidth usage, website visits etc..
+
+Install Netdata:
+
+    sudo apt install netdata
+    sudo systemctl enable netdata
+
+Netdata operates on port 19999. Open this port and set up port forwarding in VirtualBox:
+
+    sudo ufw allow 19999
+
+The default dashboard can be viewed at `http://127.0.0.1:<hostport>`.
+
+Source:
+- [How to Set Up Real-Time Performance Monitoring with Netdata](https://www.digitalocean.com/community/tutorials/how-to-set-up-real-time-performance-monitoring-with-netdata-on-ubuntu-16-04)
 
 # Resources
 - [Official website of Debian](https://www.debian.org/)
