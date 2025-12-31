@@ -727,6 +727,8 @@ Netdata operates on port 19999. Open this port and set up port forwarding in Vir
 
     sudo ufw allow 19999
 
+Modify the configuration file in `/etc/netdata/netdata.conf` as needed.
+
 The default dashboard can be viewed at `http://127.0.0.1:<hostport>`.
 
 Source:
