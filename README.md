@@ -4,7 +4,21 @@
 This project creates a virtual machine (VM), sets up an operating system (OS) and implements certain rules in it.
 
 # Instructions
-Retrieve the signature text of the VM
+To retrieve the signature of the VM, navigate to the folder where the VM is installed. The defualt folders are:
+
+- Windows: `%HOMEDRIVE%%HOMEPATH%\VirtualBox VMs\`
+- Linux: `~/VirtualBox VMs/`
+- MacM1: `~/Library/Containers/com.utmapp.UTM/Data/Documents/`
+- MacOS: `~/VirutalBox VMs/`
+
+The retrieve the signature from the `.vdi` file (or `.qcow2` for UTM) of the VM in `sha1` format:
+
+- Windows: `certUtil -hashfile <machinename>.vdi sha1`
+- Linux: `sha1sum <machinename>.vdi`
+- MacM1: `shasum <machinename>.utm/Images/disk-0.qcow2`
+- MacOS: `shasum <machinename>.vdi`
+
+**SHA-1 (Secure Hash Algorithm 1)** is a hash function in cryptography. `sha1sum` is a computer program that calculates and verifies SHA-1 hashes.
 
 # Project description
 ## Virtual Machine
@@ -111,7 +125,7 @@ A **firewall** is a network security system that monitors and controls incoming 
 
 **UFW (Uncomplicated Firewall)** is a frontend for `iptables` and `nftables` with a command-line interface and is commonly used in Debian. It is lightweight and easy to use.
 
-**firewalld** is also a frontend for `iptables` and `nftables` and is the default firewall management tool in Rocky Linux. It provides dynamic firewall management with support for complex rule sets like runtime configurations (temporary rules that are lost when the system or service restarts) and zones (different sets of rules for different types of network traffic, e.g. public, internal, trusted networks).
+**firewalld** is also a frontend for `iptables` and `nftables` and is the default firewall management tool in Rocky Linux. It provides dynamic firewall management with sup complex rule sets like runtime configurations (temporary rules that are lost when the system or service restarts) and zones (different sets of rules for different types of network traffic, e.g. public, internal, trusted networks).
 
 Source:
 - [The netfilter project](https://www.netfilter.org/)
@@ -523,7 +537,22 @@ The **wall** command displays a message, or the content of a file or its standar
 
     wall [-n] [-t timeout] [-g group] [message | file]
 
-**cron**
+Save the script under `/usr/local/bin/` so it is system-wide available and can be run anywhere.
+
+**cron** is a shell command for scheduling a job (i.e. command or shell script) to run periodically at a fixed time, date, or interval. It can be used to automate repetitive task. The cron utility runs based on commands specified in a cron table (**crontab**). Each user, including root, can have a cron file. Edit the cron file to include new rules with:
+
+    sudo crontab -u root -e # -u specifies the user, -e = edit
+
+cron job syntax: `*` every, `,` value list separator, `-` range of values, `/` step values
+
+| * | * | * | * | * | username | command to be executed |
+|---|---|---|---|---|----------|------------------------|
+|minute |hour | day of month | month | day of week | | |
+|0-59 | 0-23 | 1-31 | 1-12 or JAN-DEC | 0-6 or SUN-SAT | | |
+
+Execute monitoring script every 10 minutes:
+
+    */10 * * * * bash /usr/local/bin/monitoring.sh
 
 Source:
 - [free Linux manual page](https://man7.org/linux/man-pages/man1/free.1.html)
@@ -539,16 +568,152 @@ Source:
 - [ip Linux manual page](https://man7.org/linux/man-pages/man8/ip.8.html)
 - [journalctl Linux manual page](https://man7.org/linux/man-pages/man1/journalctl.1.html)
 - [wall Linux manual page](https://man7.org/linux/man-pages/man1/wall.1.html)
+- [How I use cron in Linux](https://opensource.com/article/17/11/how-use-cron-linux)
+- [cron schedule expression generator](https://crontab.guru/)
 - [Regular Expressions](https://www.ibm.com/docs/en/controller/11.1.2?topic=codes-regular-expressions)
 
 ### Services installed
 #### WordPress
+**WordPress** is a free and open-source web content management system.
 To run WordPress, a web server, a database management system, and PHP are required.
+
 ##### lighttpd
+**lighttpd** is an open-source web server aiming to be light, secure and standards-compliant.
+
+Install lighttpd packages:
+
+    sudo apt install lighttpd
+
+Check version, start, enable lighttpd and check status:
+
+    sudo lighttpd -v
+    sudo systemctl start lighttpd
+    sudo systemctl enable lighttpd
+    sudo systemctl status lighttpd
+
+Open port 80 to connect to lighttpd services (http):
+
+    sudo ufw allow 80
+    sudo ufw status
+
+Set up port forwarding in VirtualBox. The web server should now be accessible at `http://127.0.0.1:<hostport>` or `http://localhost:<hostport>`.
+
+Source:
+- [Debian wiki lighttpd](https://wiki.debian.org/Lighttpd)
 
 ##### MariaDB
+**MariaDB** is a free and open-source database management system and is a community developed fork of MySQL.
+
+Install MariaDB packages:
+
+    sudo apt install mariadb-server mariadb-client
+
+Secure the installation: This script guides you through important security settings like setting a root password (for the database), removing anonymous users, and disabling remote root login.
+
+    sudo mariadb-secure-installation
+
+Start, enable and check MariaDB status:
+
+    sudo systemctl start mariadb
+    sudo systemctl enable mariadb
+    sudo systemctl status mariadb
+
+Log into the MariaDB client entering the root (of the database) password:
+
+    mariadb -u root -p
+
+Create a database for WordPress:
+
+    MariaDB [(none)]> CREATE DATABASE wp_database;
+
+Create a new user who can only connect to the database from localhost:
+
+    MariaDB [(none)]> CREATE USER <username>@localhost IDENTIFIED BY '<password>';
+
+Grant the new user full privileges for `wp_database`:
+
+    MariaDB[(none)]> GRANT ALL PRIVILEGES ON wp_database.* TO <username>@localhost;
+
+Apply the privileges changes:
+
+    MariaDB [(none)]> FLUSH PRIVILEGES;
+
+Check all databases available on the server:
+
+    MariaDB [(none)]> SHOW DATABASES;
+
+Exit MariaDB:
+
+    MariaDB [(none)]> exit
+
+Source:
+- [Install MariaDB](https://mariadb.com/get-started-with-mariadb/#linux)
+- https://docs.vultr.com/how-to-install-mariadb-on-debian-12
 
 ##### PHP
+**PHP** is a programming language geared towards web development.
+
+Install PHP packages: `php-common` for PHP's common files (documentation, examples, common modules and utilities). `php-cli` for PHP's command line interface. `php-cgi` for using PHP with lighttpd. `php-mysql` for using PHP with databases.
+
+    sudo apt install php-common php-cli php-cgi php-mysql
+
+Check PHP version:
+
+    php -v
+
+Enable PHP on the web server:
+
+    lighttpd-enable-mod fastcgi fastcgi-php
+
+Restart the web server to apply the changes:
+
+    sudo systemctl restart lighttpd
+
+To test PHP is working with lighttpd, create a file in `/var/www/html/` names `info.php`. In that file, write:
+
+    <?php
+    phpinfo();
+    ?>
+
+You should find a page with PHP information at `http://127.0.0.1:<hostport>/info.php`.
+
+Source:
+- [Installing from packages on Debian GNU/Linux and related distributions](https://www.php.net/manual/en/install.unix.debian.php)
+
+##### Configuring WordPress
+Install `wget` and `tar` to download files from the web and unpack them.
+
+    sudo apt install wget tar
+
+Move to `/var/www/html/`, the root of the web server. Delete any existing files in this directory.
+
+    cd /var/www/html/
+    rm *
+
+Download the latest version of WordPress. Unpacks it and then deletes it.
+
+    wget https://wordpress.org/latest.tar.gz
+    tar -xzvf latest.tar.gz
+    rm latest.tar.gz
+
+Move WordPress files to the root directory and deletes the empty WordPress directory:
+
+    sudo mv wordpress/* .
+    rm -r wordpress/
+
+Change permissions of the WordPress directory to grant rights to the web server:
+
+    sudo chown -R www-data:www-data /var/www/html/ # changes the owner of the directory to www-data
+    sudo chmod -R 755 /var/www/html/ # owner can read, write and execure, group and others can read and execute
+
+Create the WordPress configuration file:
+
+    sudo mv wp-config-sample.php wp-config.php
+
+Edit the configuration file with database info set before. And finish setting up the website on `http://127.0.0.1:<hostport>` or `http://localhost:<hostport>`.
+
+Source:
+- [How to install WordPress](https://developer.wordpress.org/advanced-administration/before-install/howto-install/)
 
 #### Fail2ban
 for preventing brute force SSH
@@ -559,7 +724,6 @@ for preventing brute force SSH
 - [Ubuntu Software Management documentation](https://help.ubuntu.com/community/SoftwareManagement)
 - [GeeksforGeeks Basics of Computer Networking](https://www.geeksforgeeks.org/computer-networks/basics-computer-networking/)
 - [GeeksforGeeks What is Network Port?](https://www.geeksforgeeks.org/computer-networks/what-is-network-port/)
+- [Mardown guide](https://www.markdownguide.org/)
 
-
-https://www.markdownguide.org/extended-syntax/#formatting-text-in-tables
 AI was not used for this project.
