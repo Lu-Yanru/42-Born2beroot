@@ -175,7 +175,7 @@ Common partitions, their mount points, their uses and their recommended sizes:
 
 |Label |Mount point |Function        |Recommended size|
 |-----|-----|----------------|----------------|
-|root |/    |The root file system. Contains the entire file system hierarchy.|At least 700-850MB or 5-6GB for a workstation or a server installation. |
+|root |/    |The root file system.|At least 700-850MB or 5-6GB for a workstation or a server installation. |
 |sda1 |/boot|Static files of the boot loader, a program that is responsible for booting a computer and an OS| 256-512MB |
 |swap |-- |If the system runs out of RAM, then it will transfer some of the lesser used data in RAM to this space. | As much as RAM, at least 512MB, usually at most 4GB.|
 |home |/home|Users' home directories, containing saved files, personal settings etc. | Depending on planned usage and number of users, at least 100MB per user.|
