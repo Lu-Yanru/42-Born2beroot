@@ -466,9 +466,21 @@ Check group and the users in them:
 
     getent group <groupname>
 
+To enable `sudo` permission for a user, add the user to the sudo group. Then set the correct permissionf for sudoers file:
+
+    chmod 0440 /etc/sudoers
+
+Then reboot the system to apply changes.
+
 Delete a user: `-f(orce)` deletes the account (including mail and home directory) even if the user is still logged in. `-r(emove)` deletes the account (including mail and home directory), but the user must be logged out.
 
     sudo userdel <username>
+
+In the case of the message `user <username> is currently used by process <processid>` when trying to delete the user, first kill the process using the following command before deleting the user:
+
+    pkill <processid>
+    #or
+    kill -9 <processid>
 
 Source:
 - [How to manage users and groups in Linux](https://www.redhat.com/en/blog/linux-user-group-management)
