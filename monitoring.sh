@@ -32,7 +32,7 @@ lvmu=$(if [ $(lsblk | grep "lvm" | wc -l) -eq 0 ]; then echo no; else echo yes; 
 tcpc=$(ss -ta | grep ESTAB | wc -l)
 
 # user log
-ulog=$(users | wc -w)
+ulog=$($(w | wc -l) - 2)
 
 # network
 ip=$(ip address | grep "enp" | grep "inet" | awk '{print $2}' | cut -d / -f1)
