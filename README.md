@@ -482,6 +482,10 @@ In the case of the message `user <username> is currently used by process <proces
     #or
     kill -9 <processid>
 
+To delete a group:
+
+    sudo groupdel <groupname>
+
 Source:
 - [How to manage users and groups in Linux](https://www.redhat.com/en/blog/linux-user-group-management)
 
