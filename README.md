@@ -711,7 +711,7 @@ Download the latest version of WordPress. Unpacks it and then deletes it.
 Move WordPress files to the root directory and deletes the empty WordPress directory:
 
     sudo mv wordpress/* .
-    rm -r wordpress/
+    sudo rm -r wordpress/
 
 Change permissions of the WordPress directory to grant rights to the web server:
 
