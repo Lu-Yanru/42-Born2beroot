@@ -730,10 +730,9 @@ Source:
 #### Netdata
 **Netdata** is an open-source tool designed to visualize system monitoring data such as CPU usage, disk activity, bandwidth usage, website visits etc..
 
-Install Netdata:
+Install Netdata using their provided script:
 
-    sudo apt install netdata
-    sudo systemctl enable netdata
+    wget -O /tmp/netdata-kickstart.sh https://get.netdata.cloud/kickstart.sh && sh /tmp/netdata-kickstart.sh --stable-channel --disable-telemetry
 
 Netdata operates on port 19999. Open this port and set up port forwarding in VirtualBox:
 
@@ -744,6 +743,7 @@ Modify the configuration file in `/etc/netdata/netdata.conf` as needed.
 The default dashboard can be viewed at `http://127.0.0.1:<hostport>`.
 
 Source:
+- [Netata agent installation](https://learn.netdata.cloud/docs/netdata-agent/installation/linux)
 - [How to Set Up Real-Time Performance Monitoring with Netdata](https://www.digitalocean.com/community/tutorials/how-to-set-up-real-time-performance-monitoring-with-netdata-on-ubuntu-16-04)
 
 # Resources
