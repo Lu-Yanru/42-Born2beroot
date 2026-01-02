@@ -4,7 +4,7 @@
 This project creates a virtual machine (VM), sets up an operating system (OS) and implements certain rules in it.
 
 # Instructions
-To retrieve the signature of the VM, navigate to the folder where the VM is installed. The defualt folders are:
+To retrieve the signature of the VM, navigate to the folder where the VM is installed. The default folders are:
 
 - Windows: `%HOMEDRIVE%%HOMEPATH%\VirtualBox VMs\`
 - Linux: `~/VirtualBox VMs/`
