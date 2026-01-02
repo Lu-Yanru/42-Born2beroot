@@ -4,10 +4,10 @@
 arc=$(uname -a)
 
 # physical processors
-cpup=$(grep "physical id" /proc/cpuinfo | wc -l)
+cpup=$(grep "physical id" /proc/cpuinfo | uniq | wc -l)
 
 # virtual processors
-cpuv=$(grep "^processor" /proc/cpuinfo | wc -l)
+cpuv=$(grep "^processor" /proc/cpuinfo | uniq | wc -l)
 
 # RAM useage
 ram_used=$(free --mega | awk '$1 == "Mem:" {print $3}')
