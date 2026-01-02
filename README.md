@@ -496,13 +496,13 @@ The architecture of the operating system and its kernel version:
 
     uname -a # -a = -all
 
-The number of physical processors: In the file `/proc/cpuinfo`, count how many "physical id" there are.
+The number of physical processors: In the file `/proc/cpuinfo`, count how many unique "physical id" there are.
 
-    grep "physical id" /proc/cpuinfo | wc -l # The first part finds the lines containing the phrase "physical id" in the file /proc/cpuinfo. THe second part counts how many lines there are.
+    grep "physical id" /proc/cpuinfo | uniq | wc -l # The first part finds the lines containing the phrase "physical id" in the file /proc/cpuinfo. THe second part counts how many lines there are.
 
 The number of virtual processors:
 
-    grep "^processor" /proc/cpuinfo | wc -l # "^processor" matches expressions starting with "processor".
+    grep "^processor" /proc/cpuinfo | uniq | wc -l # "^processor" matches expressions starting with "processor".
 
 The current available RAM on the server and its utilization rate as a percentage: The `free` command display the amount of free and used memory in the system. The `--mega` option displays the unit in megabytes. `awk` is a text-processind and pattern-scanning tool. `$1 == "Mem:"` finds in the first column the rows that match "Mem:". `print $3` prints out the 3rd column.
 
