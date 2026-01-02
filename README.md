@@ -490,6 +490,7 @@ Source:
 - [How to manage users and groups in Linux](https://www.redhat.com/en/blog/linux-user-group-management)
 
 ### System monitoring
+#### Script
 The subject requires the creation of a monitoring script in `bash` that displays the following information:
 
 Use `bash` as the command interpreter:
@@ -549,12 +550,14 @@ The number of commands executed with the `sudo` program: The `journalctl` comman
 
     journalctl _COMM=sudo | grep COMMAND | wc -l
 
+#### wall
 The **wall** command displays a message, or the content of a file or its standard input on the terminals of all currently logged in users. Syntax:
 
     wall [-n] [-t timeout] [-g group] [message | file]
 
 Save the script under `/usr/local/bin/` so it is system-wide available and can be run anywhere.
 
+#### cron
 **cron** is a shell command for scheduling a job (i.e. command or shell script) to run periodically at a fixed time, date, or interval. It can be used to automate repetitive task. The cron utility runs based on commands specified in a cron table (**crontab**). Each user, including root, can have a cron file. Edit the cron file to include new rules with:
 
     sudo crontab -u root -e # -u specifies the user, -e = edit
