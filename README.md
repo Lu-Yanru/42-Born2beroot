@@ -700,13 +700,13 @@ Install `wget` and `tar` to download files from the web and unpack them.
 Move to `/var/www/html/`, the root of the web server. Delete any existing files in this directory.
 
     cd /var/www/html/
-    rm *
+    sudo rm *
 
 Download the latest version of WordPress. Unpacks it and then deletes it.
 
-    wget https://wordpress.org/latest.tar.gz
-    tar -xzvf latest.tar.gz
-    rm latest.tar.gz
+    sudo wget https://wordpress.org/latest.tar.gz
+    sudo tar -xzvf latest.tar.gz
+    sudo rm latest.tar.gz
 
 Move WordPress files to the root directory and deletes the empty WordPress directory:
 
