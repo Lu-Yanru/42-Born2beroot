@@ -29,7 +29,7 @@ last_reboot=$(who -b | awk '$1 == "system" {print $3 " " $4}')
 lvmu=$(if [ $(lsblk | grep "lvm" | wc -l) -eq 0 ]; then echo no; else echo yes; fi)
 
 # TCP connections
-tcpc=$(ss -t state established | wc -l)
+tcpc=$(ss -ta | grep ESTAB | wc -l)
 
 # user log
 ulog=$(users | wc -w)
