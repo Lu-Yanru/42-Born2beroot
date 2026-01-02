@@ -537,9 +537,9 @@ The number of active connections: **Transmission Control Protocal (TCP)** is a c
 
     ss -ta | grep ESTAB | wc -l
 
-The number of users using the server: The `users` command prints the user names of users currently logged in to the current host. `wc -w` counts how many words are printed.
+The number of users using the server: The `w` displays information about the users currently on the machine, and their processes. Count how many lines there are and deduct the two title lines.
 
-    users | wc -w
+    $(w | wc -l) - 2
 
 The IPv4 address of the server and its MAC (Media Access Control) address: An **IP address** is a unique numerical label assigned to each device connected to a computer network that uses the Internet Protocol (IP) for communication. The `ip` command shows information on routing, network devices, interfaces and tunnels. The `address` object shows the IP address on a device. Find the part named `enp` for ethernet, and find the part with `inet` for the IPv4 address. Select column 2 for the IP address itself and cut out the part before the `/` only, which is the IP address itself. The part after `/` is the port number. **MAC (Media Access Control)** is the layer that controls the hardware responsible for interaction with the wired or wireless transmission medium. It uses unique **MAC addresses** assigned to each device's network interface controller (NIC) for accurate data delivery within a local network. `ip link show` shows information on network devices.
 
