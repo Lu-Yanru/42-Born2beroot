@@ -528,9 +528,9 @@ Whether LVM is active or not: The `lsblk` lists information about all available 
 
     if [ $(lsblk | grep "lvm" | wc -l) -eq 0 ]; then echo no; else echo yes; fi
 
-The number of active connections: **Transmission Control Protocal (TCP)** is a connection-oriented protocol for communications that helps in the exchange of messages between different devices over a network. Major internet applications such as the WWW, email, remote administration, file transfer and streaming media rely on TCP. The `ss` command displays information on sockets. The `-t` options displays TCP sockets. `state` filters in only established connections.
+The number of active connections: **Transmission Control Protocal (TCP)** is a connection-oriented protocol for communications that helps in the exchange of messages between different devices over a network. Major internet applications such as the WWW, email, remote administration, file transfer and streaming media rely on TCP. The `ss` command displays information on sockets. The `-ta` options displays all TCP sockets. Use `grep` to get the established ones.
 
-    ss -t state established | wc -l
+    ss -ta | grep ESTAB | wc -l
 
 The number of users using the server: The `users` command prints the user names of users currently logged in to the current host. `wc -w` counts how many words are printed.
 
