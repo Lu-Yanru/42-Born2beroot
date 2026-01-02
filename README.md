@@ -665,9 +665,9 @@ Source:
 ##### PHP
 **PHP** is a programming language geared towards web development.
 
-Install PHP packages: `php-common` for PHP's common files (documentation, examples, common modules and utilities). `php-cli` for PHP's command line interface. `php-cgi` for using PHP with lighttpd. `php-mysql` for using PHP with databases.
+Install PHP packages: `php-cgi` for using PHP with lighttpd. `php-mysql` for using PHP with databases. `apt` automatically installs all necessary dependencies.
 
-    sudo apt install php-common php-cli php-cgi php-mysql
+    sudo apt install php-cgi php-mysql
 
 Check PHP version:
 
