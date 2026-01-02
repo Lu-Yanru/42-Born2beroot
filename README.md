@@ -536,9 +536,9 @@ The number of users using the server: The `users` command prints the user names 
 
     users | wc -w
 
-The IPv4 address of the server and its MAC (Media Access Control) address: An **IP address** is a unique numerical label assigned to each device connected to a computer network that uses the Internet Protocol (IP) for communication. `hostname -I` gets all IP (network) addresses. This option does not depend on resolvability of hostname (translation from hostname to IP address). **MAC (Media Access Control)** is the layer that controls the hardware responsible for interaction with the wired ir wireless transmission medium. It uses unique **MAC addresses** assigned to each device's network interface controller (NIC) for accurate data delivery within a local network. `ip link show` shows information on network devices.
+The IPv4 address of the server and its MAC (Media Access Control) address: An **IP address** is a unique numerical label assigned to each device connected to a computer network that uses the Internet Protocol (IP) for communication. The `ip` command shows information on routing, network devices, interfaces and tunnels. The `address` object shows the IP address on a device. Find the part named `enp` for ethernet, and find the part with `inet` for the IPv4 address. Select column 2 for the IP address itself and cut out the part before the `/` only, which is the IP address itself. The part after `/` is the port number. **MAC (Media Access Control)** is the layer that controls the hardware responsible for interaction with the wired or wireless transmission medium. It uses unique **MAC addresses** assigned to each device's network interface controller (NIC) for accurate data delivery within a local network. `ip link show` shows information on network devices.
 
-    hostname -I # ip address
+    ip address | grep "enp" | grep "inet" | awk '{print $2}' | cut -d / -f1 # ip address
     ip link show | grep "ether" | awk '{print $2}' # MAC address
 
 The number of commands executed with the `sudo` program: The `journalctl` command prints log entris from the system journal. `_COMM=sudo` filters the entries with only the file path "sudo" which is an executable script (thus `_COMM`).
@@ -575,9 +575,9 @@ Source:
 - [GeeksforGeeks Transmission Control Protocol - TCP](https://www.geeksforgeeks.org/computer-networks/what-is-transmission-control-protocol-tcp/)
 - [ss Linux manual page](https://man7.org/linux/man-pages/man8/ss.8.html)
 - [GeeksforGeeks What is an IP Address](https://www.geeksforgeeks.org/computer-science-fundamentals/what-is-an-ip-address/)
-- [GeeksforGeeks hostname command in Linux with examples](https://www.geeksforgeeks.org/linux-unix/hostname-command-in-linux-with-examples/)
 - [GeeksforGeeks MAC - Media Access Control](https://www.geeksforgeeks.org/computer-networks/mac-full-form/)
 - [ip Linux manual page](https://man7.org/linux/man-pages/man8/ip.8.html)
+- [Network devices naming scheme](https://www.freedesktop.org/software/systemd/man/latest/systemd.net-naming-scheme.html?__goaway_challenge=meta-refresh&__goaway_id=cf65f93141c06b92434a1c34ecfbfc58)
 - [journalctl Linux manual page](https://man7.org/linux/man-pages/man1/journalctl.1.html)
 - [wall Linux manual page](https://man7.org/linux/man-pages/man1/wall.1.html)
 - [How I use cron in Linux](https://opensource.com/article/17/11/how-use-cron-linux)
