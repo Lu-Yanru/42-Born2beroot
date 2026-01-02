@@ -35,7 +35,7 @@ tcpc=$(ss -ta | grep ESTAB | wc -l)
 ulog=$(users | wc -w)
 
 # network
-ip=$(hostname -I)
+ip=$(ip address | grep "enp" | grep "inet" | awk '{print $2}' | cut -d / -f1)
 mac=$(ip link show | grep "ether" | awk '{print $2}')
 
 # sudo
