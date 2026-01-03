@@ -466,7 +466,7 @@ Check group and the users in them:
 
     getent group <groupname>
 
-To enable `sudo` permission for a user, add the user to the sudo group. Then set the correct permissionf for sudoers file:
+To enable `sudo` permission for a user, add the user to the sudo group. Then set the correct permission for sudoers file:
 
     chmod 0440 /etc/sudoers
 
@@ -546,7 +546,7 @@ The IPv4 address of the server and its MAC (Media Access Control) address: An **
     ip address | grep "enp" | grep "inet" | awk '{print $2}' | cut -d / -f1 # ip address
     ip link show | grep "ether" | awk '{print $2}' # MAC address
 
-The number of commands executed with the `sudo` program: The `journalctl` command prints log entris from the system journal. `_COMM=sudo` filters the entries with only the file path "sudo" which is an executable script (thus `_COMM`).
+The number of commands executed with the `sudo` program: The `journalctl` command prints log entries from the system journal. `_COMM=sudo` filters the entries with only the file path "sudo" which is an executable script (thus `_COMM`).
 
     journalctl _COMM=sudo | grep COMMAND | wc -l
 
